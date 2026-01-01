@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/sessions/exercises/{sessionExercise}/start', [SessionController::class, 'start'])->name('sessions.exercises.start');
     Route::get('/sessions/exercises/{sessionExercise}/skip', [SessionController::class, 'skip'])->name('sessions.exercises.skip');
     Route::post('/sessions/exercises/{sessionExercise}/finish', [SessionController::class, 'finish'])->name('sessions.exercises.finish');
-    Route::get('/sessions/exercises/{sessionExercise}/finish', [SessionController::class, 'mark_as_finish'])->name('sessions.exercises.mark_as_finish');
+    Route::get('/sessions/exercises/{sessionExercise}/mark_as_finish', [SessionController::class, 'mark_as_finish'])->name('sessions.exercises.mark_as_finish');
 
     Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
     Route::get('/exercises/create', [ExerciseController::class, 'create'])->name('exercises.create');
