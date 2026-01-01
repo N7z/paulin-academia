@@ -107,11 +107,11 @@
 
             {{-- AÇÕES --}}
             <div class="mt-6 space-y-2">
-                <button
-                    class="w-full py-2 rounded-md bg-brand text-white text-sm font-medium"
+                <a :href="`/workouts/${selectedExercise.workout_id}/exercises/${selectedExercise.id}/upgrade`"
+                    class="w-full block text-center py-2 rounded-md bg-brand text-white text-sm font-medium"
                 >
                     Progredir carga
-                </button>
+                </a>
 
                 <form method="POST" :action="`/workouts/${selectedExercise.workout_id}/exercises/${selectedExercise.id}`">
                     @csrf

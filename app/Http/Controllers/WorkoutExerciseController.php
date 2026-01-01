@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Exercise;
 use App\Models\MuscleGroup;
 use App\Models\Workout;
 use App\Models\WorkoutExercise;
@@ -26,26 +27,34 @@ class WorkoutExerciseController extends Controller
         abort_if($workout->user_id !== auth()->id(), 403);
 
         $data = $request->validate([
-            'exercise_id' => ['required', 'exists:exercises,id'],
-            'sets' => ['required', 'integer'],
-            'reps' => ['required', 'integer'],
-            'weight' => ['required', 'numeric'],
+            'exercises' => ['required', 'array', 'min:1'],
         ]);
 
         $nextOrder = WorkoutExercise::where('workout_id', $workout->id)->max('order') ?? 0;
 
-        WorkoutExercise::create([
-            'workout_id'  => $workout->id,
-            'exercise_id' => $data['exercise_id'],
-            'order'       => $nextOrder + 1,
-            'sets'        => $data['sets'],
-            'reps'        => $data['reps'],
-            'weight'      => $data['weight'],
-        ]);
+        foreach ($data['exercises'] as $exercise) {
+            WorkoutExercise::create([
+                'workout_id'  => $workout->id,
+                'exercise_id' => $exercise['exercise_id'],
+                'order'       => ++$nextOrder,
+                'sets'        => $exercise['sets'],
+                'reps'        => $exercise['reps'],
+                'weight'      => $exercise['weight'],
+            ]);
+        }
 
         return redirect()
             ->route('workouts.show', $workout)
-            ->with('success', 'Exercício adicionado ao treino');
+            ->with('success', 'Exercício(s) adicionado(s) ao treino');
+    }
+
+    /*
+     * Progredir carga
+     */
+    public function upgrade(Workout $workout, WorkoutExercise $exercise) {
+        $exercise->increment('weight');
+        return back()
+            ->with('success', "\"{$exercise->exercise->name}\" progredido para {$exercise->weight}{$exercise->exercise->weight_type}");
     }
 
     public function destroy(Workout $workout, WorkoutExercise $exercise) {

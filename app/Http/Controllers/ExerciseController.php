@@ -6,32 +6,26 @@ use App\Models\Exercise;
 use App\Models\MuscleGroup;
 use Illuminate\Http\Request;
 
-class ExerciseController extends Controller
-{
-    public function index()
-    {
-        $muscleGroups = MuscleGroup::with('exercises')
-            ->orderBy('name')
-            ->get();
+class ExerciseController extends Controller {
+    public function index() {
+        $muscleGroups = MuscleGroup::with([
+            'exercises.workoutExercises.workout',
+            'exercises.workoutExercises.sessionExercises'
+        ])->has('exercises')->get();
 
         return view('exercises.index', compact('muscleGroups'));
     }
 
-    public function create()
-    {
+    public function create() {
         $muscleGroups = MuscleGroup::orderBy('name')->get();
 
         return view('exercises.create', compact('muscleGroups'));
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         $data = $request->validate([
             'muscle_group_id' => ['required', 'exists:muscle_groups,id'],
             'name' => ['required', 'string', 'max:255'],
-            'sets' => ['nullable', 'integer'],
-            'reps' => ['nullable', 'integer'],
-            'weight' => ['nullable', 'numeric'],
             'weight_type' => ['required', 'in:kg,lb,unit'],
         ]);
 
@@ -42,5 +36,31 @@ class ExerciseController extends Controller
         return redirect()
             ->route('exercises.index')
             ->with('success', 'Exercício criado com sucesso');
+    }
+
+    public function edit(Exercise $exercise) {
+        $muscleGroups = MuscleGroup::orderBy('name')->get();
+        return view('exercises.edit', compact('exercise', 'muscleGroups'));
+    }
+
+    public function update(Request $request, Exercise $exercise) {
+        $data = $request->validate([
+            'muscle_group_id' => ['required', 'exists:muscle_groups,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'weight_type' => ['required', 'in:kg,lb,unit'],
+        ]);
+
+        $exercise->update($data);
+
+        return redirect()
+            ->route('exercises.index')
+            ->with('success', 'Exercício atualizado com sucesso');
+    }
+
+    public function destroy(Exercise $exercise) {
+        $exercise->delete();
+        return redirect()
+            ->route('exercises.index')
+            ->with('success', 'Exercício removido com sucesso');
     }
 }

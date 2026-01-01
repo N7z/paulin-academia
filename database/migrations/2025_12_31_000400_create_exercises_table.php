@@ -16,9 +16,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('muscle_group_id')->constrained('muscle_groups');
             $table->string('name');
-            $table->integer('sets')->nullable();
-            $table->integer('reps')->nullable();
-            $table->float('weight')->nullable();
             $table->enum('weight_type', ['lb', 'kg', 'unit'])->default('kg')->nullable();
             $table->softDeletes();
             $table->timestamps();

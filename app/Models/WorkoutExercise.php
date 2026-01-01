@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Exercise $exercise
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SessionExercise> $sessionExercises
+ * @property-read int|null $session_exercises_count
  * @property-read \App\Models\Workout $workout
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkoutExercise newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkoutExercise newQuery()
@@ -46,5 +49,9 @@ class WorkoutExercise extends Model {
 
     public function exercise(): BelongsTo {
         return $this->belongsTo(Exercise::class);
+    }
+
+    public function sessionExercises(): HasMany {
+        return $this->hasMany(SessionExercise::class);
     }
 }

@@ -30,6 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
     Route::get('/exercises/create', [ExerciseController::class, 'create'])->name('exercises.create');
     Route::post('/exercises', [ExerciseController::class, 'store'])->name('exercises.store');
+    Route::get('/exercises/{exercise}/edit', [ExerciseController::class, 'edit'])->name('exercises.edit');
+    Route::put('/exercises/{exercise}', [ExerciseController::class, 'update'])->name('exercises.update');
+    Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy'])->name('exercises.destroy');
 
     Route::get('/workouts', [WorkoutController::class, 'index'])->name('workouts.index');
     Route::get('/workouts/create', [WorkoutController::class, 'create'])->name('workouts.create');
@@ -45,6 +48,9 @@ Route::middleware('auth')->group(function () {
 
         Route::delete('/{exercise}', [WorkoutExerciseController::class, 'destroy'])
             ->name('workouts.exercises.destroy');
+
+        Route::get('/{exercise}/upgrade', [WorkoutExerciseController::class, 'upgrade'])
+            ->name('workouts.exercises.upgrade');
     });
 });
 

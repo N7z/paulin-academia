@@ -11,6 +11,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $workout_session_id
  * @property int $workout_exercise_id
  * @property int $difficulty
+ * @property int|null $performed_sets
+ * @property int|null $performed_reps
+ * @property float|null $performed_weight
+ * @property string|null $notes
  * @property int $completed
  * @property string|null $started_at
  * @property string|null $ended_at
@@ -29,6 +33,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise whereDifficulty($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise whereEndedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise wherePerformedReps($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise wherePerformedSets($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise wherePerformedWeight($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise whereStartedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SessionExercise whereWorkoutExerciseId($value)

@@ -2,22 +2,19 @@
 
     <div
         x-data="{
-        muscleGroupId: '',
-        exerciseId: '',
-        exercises: [],
-        selectedExercise: null,
+            muscleGroupId: '',
+            exercises: [],
+            selected: {},
 
-        sets: '',
-        reps: '',
-        weight: '',
-        weightType: 'kg',
+            muscleGroups: {{ Js::from($muscleGroups) }}
+        }"
+        class="space-y-6"
+    >
 
-        muscleGroups: {{ Js::from($muscleGroups) }}
-    }">
         {{-- HEADER --}}
         <div class="space-y-1">
             <h1 class="text-xl font-semibold text-zinc-900">
-                Adicionar exercício
+                Adicionar exercícios
             </h1>
 
             <p class="text-sm text-zinc-500">
@@ -28,7 +25,7 @@
         <form
             method="POST"
             action="{{ route('workouts.exercises.store', $workout) }}"
-            class="space-y-4"
+            class="space-y-6"
         >
             @csrf
 
@@ -44,8 +41,7 @@
                     @change="
                         const group = muscleGroups.find(g => g.id == muscleGroupId);
                         exercises = group ? group.exercises : [];
-                        exerciseId = '';
-                        selectedExercise = null;
+                        selected = {};
                     "
                 >
                     <option value="">Selecione</option>
@@ -56,101 +52,102 @@
                 </select>
             </div>
 
-            {{-- EXERCÍCIO --}}
-            <div class="bg-white rounded-xl shadow-sm p-4 space-y-2">
-                <label class="text-sm font-medium text-zinc-700">
-                    Exercício
-                </label>
-
-                <select
-                    name="exercise_id"
-                    x-model="exerciseId"
-                    :disabled="!exercises.length"
-                    required
-                    class="w-full rounded-lg border-zinc-300 disabled:bg-zinc-100"
-                    @change="
-                        selectedExercise = exercises.find(e => e.id == exerciseId);
-                        sets = selectedExercise?.sets ?? '';
-                        reps = selectedExercise?.reps ?? '';
-                        weight = selectedExercise?.weight ?? '';
-                        weightType = selectedExercise?.weight_type ?? 'kg';
-                    "
-                >
-                    <option value="">Selecione</option>
-
-                    <template x-for="exercise in exercises" :key="exercise.id">
-                        <option :value="exercise.id" x-text="exercise.name"></option>
-                    </template>
-                </select>
-            </div>
-
-            {{-- CONFIGURAÇÃO --}}
+            {{-- LISTA DE EXERCÍCIOS --}}
             <div
-                x-show="selectedExercise"
+                x-show="exercises.length"
                 x-transition
                 x-cloak
                 class="bg-white rounded-xl shadow-sm p-4 space-y-3"
             >
                 <p class="text-sm font-medium text-zinc-700">
-                    Configuração do treino
+                    Exercícios
                 </p>
 
-                <div class="grid grid-cols-3 gap-2">
-                    <div>
-                        <label class="text-xs text-zinc-500">Sets</label>
+                <template x-for="exercise in exercises" :key="exercise.id">
+                    <label
+                        class="flex items-center gap-3 p-2 rounded-lg border cursor-pointer hover:bg-zinc-50"
+                    >
                         <input
-                            type="number"
-                            name="sets"
-                            min="1"
-                            x-model="sets"
-                            class="w-full rounded-lg border-zinc-300 text-center"
+                            type="checkbox"
+                            class="rounded border-zinc-300"
+                            @change="
+                                if ($event.target.checked) {
+                                    selected[exercise.id] = {
+                                        id: exercise.id,
+                                        name: exercise.name,
+                                        sets: 3,
+                                        reps: 10,
+                                        weight: 0
+                                    };
+                                } else {
+                                    delete selected[exercise.id];
+                                }
+                            "
                         >
-                    </div>
 
-                    <div>
-                        <label class="text-xs text-zinc-500">Reps</label>
+                        <span class="text-sm text-zinc-700" x-text="exercise.name"></span>
+                    </label>
+                </template>
+            </div>
+
+            {{-- CONFIGURAÇÃO --}}
+            <div
+                x-show="Object.keys(selected).length"
+                x-transition
+                x-cloak
+                class="space-y-4"
+            >
+                <p class="text-sm font-semibold text-zinc-700">
+                    Configuração
+                </p>
+
+                <template x-for="item in Object.values(selected)" :key="item.id">
+                    <div class="bg-white rounded-xl shadow-sm p-4 space-y-3">
+                        <p class="font-medium text-zinc-800" x-text="item.name"></p>
+
+                        {{-- hidden --}}
                         <input
-                            type="number"
-                            name="reps"
-                            min="1"
-                            x-model="reps"
-                            class="w-full rounded-lg border-zinc-300 text-center"
+                            type="hidden"
+                            :name="`exercises[${item.id}][exercise_id]`"
+                            :value="item.id"
                         >
-                    </div>
 
-                    <div>
-                        <label class="text-xs text-zinc-500">Peso</label>
-                        <input
-                            type="number"
-                            name="weight"
-                            step="0.5"
-                            x-model="weight"
-                            class="w-full rounded-lg border-zinc-300 text-center"
-                        >
-                    </div>
-                </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="text-xs text-zinc-500">Sets</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    class="w-full rounded-lg border-zinc-300 text-center"
+                                    x-model="item.sets"
+                                    :name="`exercises[${item.id}][sets]`"
+                                >
+                            </div>
 
-                {{-- TIPO --}}
-                <div class="flex gap-2">
-                    <template x-for="type in ['kg','lb','unit']" :key="type">
-                        <label class="flex-1 text-center cursor-pointer">
-                            <input
-                                type="radio"
-                                name="weight_type"
-                                :value="type"
-                                class="peer hidden"
-                                x-model="weightType"
-                            >
-                            <div
-                                class="py-2 rounded-lg border text-sm
-                                peer-checked:border-brand
-                                peer-checked:bg-brand/10
-                                peer-checked:text-brand"
-                                x-text="type"
-                            ></div>
-                        </label>
-                    </template>
-                </div>
+                            <div>
+                                <label class="text-xs text-zinc-500">Reps</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    class="w-full rounded-lg border-zinc-300 text-center"
+                                    x-model="item.reps"
+                                    :name="`exercises[${item.id}][reps]`"
+                                >
+                            </div>
+
+                            <div>
+                                <label class="text-xs text-zinc-500">Peso</label>
+                                <input
+                                    type="number"
+                                    step="0.5"
+                                    class="w-full rounded-lg border-zinc-300 text-center"
+                                    x-model="item.weight"
+                                    :name="`exercises[${item.id}][weight]`"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </div>
 
             {{-- ACTIONS --}}
@@ -166,7 +163,7 @@
                     type="submit"
                     class="flex-1 py-2 rounded-lg bg-brand text-white font-medium"
                 >
-                    Adicionar
+                    Adicionar exercícios
                 </button>
             </div>
 

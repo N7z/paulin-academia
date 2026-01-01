@@ -99,6 +99,22 @@ class SessionController extends Controller {
 
     public function skip(SessionExercise $sessionExercise) {
         $sessionExercise->delete();
+
+        $session = $sessionExercise->workoutSession;
+        $pendingExercises = $session->session_exercises()->where('completed', false)->count();
+
+        if ($pendingExercises == 0) {
+            $session->update([
+                'finished_at' => now(),
+            ]);
+
+            $timeSpent = Carbon::parse($session->started_at)->longAbsoluteDiffForHumans();
+
+            return redirect()
+                ->route('dashboard')
+                ->with('success', "Treino finalizado com sucesso, duração total: $timeSpent");
+        }
+
         return redirect()
             ->route('dashboard')
             ->with('success', 'Exercício pulado com sucesso');
