@@ -69,7 +69,7 @@
                         @else bg-red-100 text-red-700 @endif
                         "
                     >
-                        {{ ['Leve', 'Ok', 'Pesado'][$item->difficulty] }}
+                        {{ ['Fácil', 'Moderado', 'Difícil'][$item->difficulty] }}
                     </span>
                 </div>
 
