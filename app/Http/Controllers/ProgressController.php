@@ -11,8 +11,8 @@ class ProgressController extends Controller {
         $user = auth()->user();
 
         $history = SessionExercise::whereHas('workoutSession', fn($q) => $q->where('user_id', $user->id))
-            ->whereNotNull('finished_at')
-            ->latest('finished_at')
+            ->whereNotNull('ended_at')
+            ->latest('ended_at')
             ->take(20)
             ->get();
 
