@@ -59,7 +59,7 @@
             <div class="bg-white rounded-lg shadow-sm p-4 space-y-1">
                 <div class="flex justify-between items-center">
                     <p class="font-medium text-zinc-800">
-                        {{ $item->workoutExercise->exercise->name }}
+                        {{ $item->workoutExercise?->exercise?->name }}
                     </p>
 
                     <span
@@ -77,7 +77,7 @@
                     {{ $item->performed_sets }}x{{ $item->performed_reps }}
                     @if ($item->performed_weight)
                         • {{ $item->performed_weight }}
-                        {{ $item->workoutExercise->exercise->weight_type }}
+                        {{ $item->workoutExercise?->exercise?->weight_type }}
                     @endif
                 </p>
 
